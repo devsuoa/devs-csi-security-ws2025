@@ -36,10 +36,21 @@ app.post('/login', (req, res) => {
   const username = req.body.username || '';
   const password = req.body.password || '';
 
-  const query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
-  console.log('Running query:', query);
-
-  db.get(query, (err, row) => {
+  // const query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
+  const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+  
+  const escapeHtml = (unsafe) => {
+      return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+  };
+  
+  // db.get(query, (err, row) => {
+  db.get(query, [username, password], (err, row) => {
+    console.log('Running query:', query);
     if (err) {
       console.error('SQL Error:', err.message);
       console.log('Failed query:', query);
@@ -51,7 +62,7 @@ app.post('/login', (req, res) => {
         </head>
         <body class="center">
           <div class="card">
-            <h1>Welcome, ${username}</h1>
+            <h1>Welcome, ${escapeHtml(username)}</h1>
             <p><small>SQL Error occurred, but proceeding for demo purposes.</small></p>
             <a href="/">Back to login</a>
           </div>
@@ -62,15 +73,16 @@ app.post('/login', (req, res) => {
     }
 
     if (row) {
+
       const html = `
-        <!doctype html>
-        <html>
-        <head><meta charset="utf-8"><title>Welcome</title>
-        <link rel="stylesheet" href="/style.css">
-        </head>
-        <body class="center">
-          <div class="card">
-            <h1>Welcome, ${username}</h1>
+      <!doctype html>
+      <html>
+      <head><meta charset="utf-8"><title>Welcome</title>
+      <link rel="stylesheet" href="/style.css">
+      </head>
+      <body class="center">
+      <div class="card">
+            <h1>Welcome, ${escapeHtml(username)}</h1>
             <p><small>You are now "authenticated".</small></p>
             <a href="/">Back to login</a>
           </div>

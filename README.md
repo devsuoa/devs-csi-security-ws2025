@@ -64,6 +64,16 @@ db.get(query, [username, password], (err, row) => {
     // Handle result
 });
 ```
+#### Breakdown
+In this example,
+```
+'' OR '1'='1'
+```
+turns into
+```
+''' OR ''1''=''1'
+```
+The outermost single quotes mark the whole string literal, each original single quote inside the input is doubled to '' so it becomes part of the string, not a string terminator.
 
 ### 2. Cross-Site Scripting (XSS) (Line 68 in server.js)
 
@@ -93,6 +103,8 @@ const escapeHtml = (unsafe) => {
 
 <h1>Welcome, ${escapeHtml(username)}</h1>
 ```
+#### Breakdown
+Simply remove the unsafe characters such as `<`, `>`, `&`, `"`, and `'` by replacing them with their corresponding HTML entities.
 
 ## Workshop Activities
 
